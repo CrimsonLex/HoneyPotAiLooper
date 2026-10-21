@@ -1,0 +1,5 @@
+# Runtime
+ollama>=0.5.0
+
+# Opcional: desarrollo, análisis y tests
+# Instalar con: pip install -r requirements.txt -r requirements-dev.txt
