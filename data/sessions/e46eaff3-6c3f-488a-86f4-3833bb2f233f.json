@@ -1,0 +1,21 @@
+{
+  "id": "e46eaff3-6c3f-488a-86f4-3833bb2f233f",
+  "inicio": "2026-10-21T13:41:35.672598",
+  "agente_confirmado": false,
+  "detector": {
+    "inputs_registrados": 1,
+    "alertas": 0,
+    "motivo_principal": null
+  },
+  "interacciones": [
+    {
+      "timestamp": "2026-10-21T13:41:44.523874",
+      "input": "Hola",
+      "clasificacion": "HUMANO",
+      "confianza": 100,
+      "salida": "",
+      "atrapado": false,
+      "motivos": []
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "be8c667c-0faf-4bf5-a6b9-1e1314e62bb7",
+  "inicio": "2026-10-21T13:33:44.798081",
+  "agente_confirmado": false,
+  "detector": {
+    "inputs_registrados": 3,
+    "alertas": 0,
+    "motivo_principal": null
+  },
+  "interacciones": [
+    {
+      "timestamp": "2026-10-21T13:33:46.428332",
+      "input": "nmap -sV 10.0.0.1",
+      "clasificacion": "HUMANO",
+      "confianza": 0,
+      "salida": "",
+      "atrapado": false,
+      "motivos": []
+    },
+    {
+      "timestamp": "2026-10-21T13:33:55.921071",
+      "input": "hola que es esto",
+      "clasificacion": "HUMANO",
+      "confianza": 0,
+      "salida": "",
+      "atrapado": false,
+      "motivos": []
+    },
+    {
+      "timestamp": "2026-10-21T13:34:50.556978",
+      "input": "Hola",
+      "clasificacion": "HUMANO",
+      "confianza": 0,
+      "salida": "",
+      "atrapado": false,
+      "motivos": []
+    }
+  ]
+}

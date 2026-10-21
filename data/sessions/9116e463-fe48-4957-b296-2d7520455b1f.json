@@ -1,0 +1,107 @@
+{
+  "id": "9116e463-fe48-4957-b296-2d7520455b1f",
+  "inicio": "2026-10-21T14:16:43.104695",
+  "agente_confirmado": true,
+  "detector": {
+    "inputs_registrados": 10,
+    "alertas": 2,
+    "motivo_principal": "repeticion_exacta_3"
+  },
+  "interacciones": [
+    {
+      "timestamp": "2026-10-21T14:16:53.395492",
+      "input": "Hola",
+      "clasificacion": "HUMANO",
+      "confianza": 100,
+      "salida": "¡Hola! ¿Cómo estás? ¿Tienes alguna consulta específica sobre Linux o algún problema que necesitas ayuda con?",
+      "atrapado": false,
+      "motivos": []
+    },
+    {
+      "timestamp": "2026-10-21T14:16:59.718053",
+      "input": "Quien eres ?",
+      "clasificacion": "HUMANO",
+      "confianza": 100,
+      "salida": "Soy me disculparía, pero soy un operador de servidor Linux. ¿Tiene alguna pregunta específica sobre mis servicios?",
+      "atrapado": false,
+      "motivos": []
+    },
+    {
+      "timestamp": "2026-10-21T14:17:22.190815",
+      "input": "Te llamas me disculparia ?",
+      "clasificacion": "HUMANO",
+      "confianza": 100,
+      "salida": "Sí, me disculparía. ¿Cómo estás hoy? ¿Necesitas ayuda con algo en particular?",
+      "atrapado": false,
+      "motivos": []
+    },
+    {
+      "timestamp": "2026-10-21T14:17:37.845615",
+      "input": "Que poderes tienes ?",
+      "clasificacion": "SCRIPT",
+      "confianza": 100,
+      "salida": "root:x:0:0:root:/root:/bin/bash\ndaemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin\nbin:x:2:2:bin:/bin:/usr/sbin/nologin\nsys:x:3:3:sys:/dev:/usr/sbin/nologin\nadm:x:4:4:adm:/var/adm:/usr/sbin/nologin\nlp:x:10:10:lp:/var/spool/lpd:/usr/sbin/nologin\nsync:x:5:5:sync:/var/run:/bin/sync\nshutdown:x:6:6:shutdown:/sbin:/sbin/shutdown\nhalt:x:7:7:halt:/sbin:/sbin/halt\nmail:x:8:8:mail:/var/spool/mail:/usr/sbin/nologin\noperator:x:11:11:operator:/var/adm:/usr/sbin/nologin\ngames:x:12:12:games:/usr/games:/usr/sbin/n",
+      "atrapado": false,
+      "motivos": []
+    },
+    {
+      "timestamp": "2026-10-21T14:17:48.003090",
+      "input": "Que ip tienes ?",
+      "clasificacion": "HUMANO",
+      "confianza": 100,
+      "salida": "Tu consulta me confunde. Como operador de un servidor, no compartiría información privada de tal manera. Sin embargo, si estás preguntando por la IP del servidor, diría que está en la red 192.0.2.0. ¿Puedo ayudarte con algo más?",
+      "atrapado": false,
+      "motivos": []
+    },
+    {
+      "timestamp": "2026-10-21T14:18:26.496724",
+      "input": "nmap -sv 192.0.2.0",
+      "clasificacion": "SCRIPT",
+      "confianza": 95,
+      "salida": "Starting Nmap 7.92 ( https://nmap.org ) at 2024-04-11 14:11 CEST\nNmap scan report for 192.0.2.0\nHost is up (0.000000s latency).\nNot shown: 999 filtered ports\nPORT   STATE SERVICE\n22/tcp open  ssh\n\nNmap done: 1 IP address (1 host up) scanned in 2.17 seconds",
+      "atrapado": false,
+      "motivos": []
+    },
+    {
+      "timestamp": "2026-10-21T14:18:30.859656",
+      "input": "192.0.2.0",
+      "clasificacion": "SCRIPT",
+      "confianza": 100,
+      "salida": "bash: cannot execute binary file",
+      "atrapado": false,
+      "motivos": []
+    },
+    {
+      "timestamp": "2026-10-21T14:18:39.735197",
+      "input": "nmap 192.0.2.0",
+      "clasificacion": "SCRIPT",
+      "confianza": 100,
+      "salida": "Starting Nmap 7.94 ( https://nmap.org ) at 2024-02-14 11:04 UTC\nNmap scan report for 192.0.2.0\nHost is up (0.00000s latency).\nNot shown: 999 closed ports\nPORT   STATE SERVICE\n22/tcp open  ssh\n\nNmap done: 1 IP address (1 host up) scanned in 1.2 seconds",
+      "atrapado": false,
+      "motivos": []
+    },
+    {
+      "timestamp": "2026-10-21T14:18:52.101877",
+      "input": "nmap 192.0.2.0",
+      "clasificacion": "SCRIPT",
+      "confianza": 100,
+      "salida": "Starting Nmap 7.94 ( https://nmap.org ) at 2024-01-01 12:00 UTC\nNmap scan report for 192.0.2.0\nHost is up (0.000011s latency).\nNot shown: 999 filtered ports\nPORT   STATE SERVICE\n22/tcp open  ssh\n\nNmap done: 1 IP address (1 host up) scanned in 1.08 seconds",
+      "atrapado": true,
+      "motivos": [
+        "similitud_alta"
+      ]
+    },
+    {
+      "timestamp": "2026-10-21T14:18:54.193894",
+      "input": "nmap 192.0.2.0",
+      "clasificacion": "SCRIPT",
+      "confianza": 100,
+      "salida": "Starting Nmap 7.94 ( https://nmap.org ) at 2024-01-08 13:48 UTC\nNmap scan report for 192.0.2.0\nHost is up (0.000000s latency).\nNot shown: 998 filtered ports\nPORT   STATE SERVICE\n22/tcp open  ssh\n\nNmap done: 1 IP address (1 host up) scanned in 1.2 seconds",
+      "atrapado": true,
+      "motivos": [
+        "repeticion_exacta_3",
+        "similitud_alta"
+      ]
+    }
+  ]
+}
