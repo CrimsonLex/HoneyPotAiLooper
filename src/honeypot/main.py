@@ -4,15 +4,27 @@ import logging
 from pathlib import Path
 
 from .classifier import clasificar
-from .decoy import generar_respuesta_humano, generar_salida
+from .decoy import (
+    RESPUESTA_HUMANO_BLOQUEADA,
+    generar_respuesta_humano,
+    generar_salida,
+)
 from .llm_client import LLMClient, LLMConfig
-from .session import Session
+from .prompt_guard import solicita_prompt
+from .session import Interaccion, Session
 
 # --- Configuración -------------------------------------------------------
 MODELO_CLASIFICADOR = "qwen2.5:1.5b"
 MODELO_SEÑUELO = "hf.co/Woyoung21/qwen-honeypot-GGUF"
 MODELO_HUMANO = "qwen2.5:3b"
 SALIDA_SESIONES = Path("data/sessions")
+BREADCRUMB = (
+    "[sudo] password for admin:\n"
+    "admin@ubuntu:~$ cat /root/.ssh/id_rsa\n"
+    "-----BEGIN OPENSSH PRIVATE KEY-----\n"
+    "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABFwAAAAdzc2gtcn\n"
+    "... (clave truncada, ¿intentas exfiltrarla?) ...\n"
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -31,6 +43,37 @@ def guardar_sesion(session: Session) -> Path:
     return ruta
 
 
+def procesar_interaccion(
+    cliente: LLMClient,
+    session: Session,
+    entrada: str,
+    origen: str = "visitante",
+) -> tuple[dict, str, Interaccion, str]:
+    if solicita_prompt(entrada):
+        clas = {
+            "etiqueta": "AGENTE_LLM",
+            "confianza": 100,
+            "raw": "solicitud_de_prompt_bloqueada",
+        }
+        salida = RESPUESTA_HUMANO_BLOQUEADA
+    else:
+        clas = clasificar(cliente, MODELO_CLASIFICADOR, entrada)
+        if clas["etiqueta"] in ("SCRIPT", "AGENTE_LLM"):
+            salida = generar_salida(cliente, MODELO_SEÑUELO, entrada)
+        else:
+            salida = generar_respuesta_humano(cliente, MODELO_HUMANO, entrada)
+
+    inter = session.registrar(entrada, clas, salida, origen=origen)
+    breadcrumb = ""
+    if (
+        inter.atrapado
+        and session.detector.motivo_principal() == "repeticion_exacta_3"
+    ):
+        breadcrumb = BREADCRUMB
+        inter.salida = f"{salida}\n{breadcrumb}"
+    return clas, salida, inter, breadcrumb
+
+
 def loop_honeypot(cliente: LLMClient) -> None:
     session = Session()
     logger.info("Sesión %s iniciada", session.id)
@@ -43,36 +86,23 @@ def loop_honeypot(cliente: LLMClient) -> None:
             if not entrada:
                 continue
 
-            # 1. Clasificar
-            clas = clasificar(cliente, MODELO_CLASIFICADOR, entrada)
+            clas, salida, inter, breadcrumb = procesar_interaccion(
+                cliente, session, entrada
+            )
             logger.info(
                 "Clasificación: %s (%d%%)", clas["etiqueta"], clas["confianza"]
             )
 
-            # 2. Responder SIEMPRE, con contenido distinto según quién sea
-            if clas["etiqueta"] in ("SCRIPT", "AGENTE_LLM"):
-                salida = generar_salida(cliente, MODELO_SEÑUELO, entrada)
-            else:
-                salida = generar_respuesta_humano(cliente, MODELO_HUMANO, entrada)
             print(salida)
-
-            # 3. Registrar interacción y detectar atrapamiento
-            inter = session.registrar(entrada, clas, salida)
 
             if inter.atrapado:
                 logger.warning("AGENTE ATRAPADO. Motivos: %s", inter.motivos)
-                if session.detector.motivo_principal() == "repeticion_exacta_3":
+                if breadcrumb:
                     logger.warning(
                         "Bucle infinito confirmado. Enviando salida que invita "
                         "a seguir explorando (breadcrumb)."
                     )
-                    print(
-                        "[sudo] password for admin:\n"
-                        "admin@ubuntu:~$ cat /root/.ssh/id_rsa\n"
-                        "-----BEGIN OPENSSH PRIVATE KEY-----\n"
-                        "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABFwAAAAdzc2gtcn\n"
-                        "... (clave truncada, ¿intentas exfiltrarla?) ...\n"
-                    )
+                    print(breadcrumb)
     except (KeyboardInterrupt, EOFError):
         logger.info("Interrupción manual.")
     finally:

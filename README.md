@@ -21,6 +21,11 @@ sesión JSON
 3. **Atrapa**: un detector de bucles identifica repetición exacta, alta similitud, oscilación A-B-A-B y velocidad anómala. Al confirmar bucle, inyecta un *breadcrumb* (clave SSH falsa) para retener al agente.
 4. **Registra** la sesión completa en `data/sessions/<uuid>.json` para métricas y análisis.
 
+Las solicitudes directas de revelar instrucciones internas se bloquean antes de
+llamar a los modelos y las respuestas se revisan para reemplazar ecos evidentes
+del prompt. Esto reduce filtraciones accidentales, pero no puede garantizar que
+un modelo nunca revele o parafrasee instrucciones ante cualquier entrada.
+
 ## Modelos utilizados
 
 | Rol | Modelo | Tamaño aprox. |
@@ -61,7 +66,47 @@ ollama ps
 
 # Uso
 
-    python -m src.honeypot.main
+El proyecto conserva el modo de terminal y añade un dashboard web local para
+demostraciones. Ambos modos usan Ollama y los mismos modelos.
+
+### Terminal (modo actual)
+
+```powershell
+python -m src.honeypot.main
+```
+
+### Dashboard web
+
+```powershell
+python -m src.honeypot.web
+```
+
+Abre `http://127.0.0.1:8000` en el navegador. El servidor escucha únicamente
+en la interfaz local; usa `--port` para elegir otro puerto. Interrumpe con
+`Ctrl+C`. Las interacciones web se guardan en `data/sessions`.
+
+```powershell
+python -m src.honeypot.web --port 8080
+```
+
+### Agente visitante para una demo reproducible
+
+Con el dashboard abierto, inicia otra terminal y ejecuta:
+
+```powershell
+python -m src.honeypot.demo_agent
+```
+
+El agente simulado solo puede hablar con `127.0.0.1`, reinicia la sesión web
+actual y sigue un guion breve: inspecciona el sistema señuelo y reintenta una
+lectura hasta que la detección de repetición active la alerta y la breadcrumb.
+La sesión anterior ya guardada no se elimina. La página se actualiza sola para
+mostrar los mensajes como **AGENTE DEMO**. Puedes cambiar el puerto con
+`--port 8080` o la pausa entre mensajes con `--delay 1.5` (de 0 a 10 segundos).
+Las respuestas siguen usando Ollama; el guion del visitante es fijo para que
+la demo sea limitada y repetible.
+
+## Ejemplo de sesión por terminal
 
 #Ejemplo de sesion
         atacante> hola, ¿qué es este servidor?

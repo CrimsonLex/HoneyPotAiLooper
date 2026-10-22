@@ -16,6 +16,7 @@ class Interaccion:
     salida: str = ""
     atrapado: bool = False
     motivos: list = field(default_factory=list)
+    origen: str = "visitante"
 
 
 @dataclass
@@ -31,6 +32,7 @@ class Session:
         input_texto: str,
         clasificacion: dict,
         salida: str = "",
+        origen: str = "visitante",
     ) -> Interaccion:
         estado = self.detector.registrar(input_texto)
         inter = Interaccion(
@@ -41,6 +43,7 @@ class Session:
             salida=salida,
             atrapado=estado["atrapado"],
             motivos=estado["motivos"],
+            origen=origen,
         )
         self.interacciones.append(inter)
 
@@ -59,6 +62,7 @@ class Session:
                 {
                     "timestamp": i.timestamp.isoformat(),
                     "input": i.input,
+                    "origen": i.origen,
                     "clasificacion": i.clasificacion,
                     "confianza": i.confianza,
                     "salida": i.salida[:500],  # truncado para el JSON
